@@ -2,6 +2,8 @@
 Single,RF,0.794,0.760,0.753
 Single,GB,0.810,0.802,0.772
 Single,XGB,0.797,0.765,0.752
-Ensemble,Voting-S,0.793,0.820,0.765
-Ensemble,Voting-W,0.795,0.814,0.765
-Ensemble,STK,0.796,0.808,0.764
+Ensemble,Voting-H,0.811,0.790,0.775
+Ensemble,Voting-S,0.811,0.787,0.772
+Ensemble,Voting-W,0.811,0.787,0.772
+Ensemble,BLD,0.814,0.805,0.776
+Ensemble,STK,0.813,0.790,0.775

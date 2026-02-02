@@ -24,7 +24,7 @@ def load_merged_data():
     """
     print("\nLoading preprocessed merged data (structured + TF-IDF)...")
     
-    merged_data_path = '/home/ubuntu/upload/preprocessed_merged_struct_tfidf_binary.pkl'
+    merged_data_path = '/home/ubuntu/credit-risk-reproducibility/data/preprocessed/preprocessed_merged_struct_tfidf_binary.pkl'
     with open(merged_data_path, 'rb') as f:
         merged_data = pickle.load(f)
     

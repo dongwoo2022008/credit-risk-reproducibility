@@ -23,7 +23,7 @@ def load_merged_data():
     """
     print("\nLoading preprocessed merged data (structured + TF-IDF)...")
     
-    merged_data_path = '/home/ubuntu/upload/preprocessed_merged_struct_tfidf_binary.pkl'
+    merged_data_path = '/home/ubuntu/credit-risk-reproducibility/data/preprocessed/preprocessed_merged_struct_minilm_binary.pkl'
     with open(merged_data_path, 'rb') as f:
         merged_data = pickle.load(f)
     
@@ -39,33 +39,24 @@ def load_merged_data():
 
 def load_base_models():
     """
-    Load trained base models from Phase 3 (tuned merged models)
+    Load trained base models from Phase 2 Stage 1 (TF-IDF merged models)
     """
-    print("\nLoading base models...")
+    print("\nLoading base models from Phase 2 Stage 1...")
     
     models = {}
     
-    # Try to load tuned merged models first (Phase 3)
-    phase3_dir = config.MODELS_DIR / "phase3"
-    if phase3_dir.exists():
-        for model_name in ['rf', 'gb', 'xgb']:
-            tuned_path = phase3_dir / f"{model_name}_tuned_merged_model.joblib"
-            if tuned_path.exists():
-                models[model_name] = joblib.load(tuned_path)
-                print(f"  Loaded tuned merged {model_name.upper()} model")
-            else:
-                # Fall back to Phase 2 baseline
-                baseline_path = config.MODELS_DIR / "phase2" / f"stage1_tfidf_{model_name}_model.joblib"
-                if baseline_path.exists():
-                    models[model_name] = joblib.load(baseline_path)
-                    print(f"  Loaded Phase 2 baseline {model_name.upper()} model")
-    else:
-        # Load Phase 2 baseline models
-        for model_name in ['rf', 'gb', 'xgb']:
-            baseline_path = config.MODELS_DIR / "phase2" / f"stage1_tfidf_{model_name}_model.joblib"
-            if baseline_path.exists():
-                models[model_name] = joblib.load(baseline_path)
-                print(f"  Loaded Phase 2 baseline {model_name.upper()} model")
+    # Load Phase 2 Stage 1 models
+    phase2_dir = config.MODELS_DIR / "phase2" / "stage1_tfidf"
+    
+    for model_name in ['rf', 'gb', 'xgb']:
+        model_path = phase2_dir / f"{model_name}_model.pkl"
+        if model_path.exists():
+            import pickle
+            with open(model_path, 'rb') as f:
+                models[model_name] = pickle.load(f)
+            print(f"  Loaded Phase 2 Stage 1 {model_name.upper()} model")
+        else:
+            print(f"  Warning: {model_name.upper()} model not found at {model_path}")
     
     return models
 
