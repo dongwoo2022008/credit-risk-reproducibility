@@ -1,0 +1,5 @@
+Field,Mean,Standard Deviation,Median,Q1,Q3,Min,Max
+Title,15.7,7.4,14.0,10.0,20.0,0,76
+Loan Purpose,213.3,217.4,152.0,75.0,272.0,0,2433
+Repayment Plan,225.6,218.1,175.0,83.0,302.0,0,3357
+Total (Title + Purpose + Plan),454.5,350.9,370.0,221.0,585.0,7,3946

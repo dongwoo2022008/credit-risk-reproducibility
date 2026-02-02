@@ -1,0 +1,5 @@
+Variable,Correlation_with_Length
+Actual Default,-0.0512
+Structured Only Pred,-0.1386
+RF+Text Pred,-0.166
+GB+Text Pred,-0.1162

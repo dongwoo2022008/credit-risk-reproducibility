@@ -1,0 +1,9 @@
+Model,Threshold,F1-score Gap (%),Recall Gap (%)
+RF+Text,0.3,25.4,0.0
+RF+Text,0.4,24.85,10.28
+RF+Text,0.5,30.73,36.17
+RF+Text,0.6,46.12,72.34
+GB+Text,0.3,21.77,17.88
+GB+Text,0.4,23.17,31.43
+GB+Text,0.5,30.35,48.68
+GB+Text,0.6,42.02,76.32

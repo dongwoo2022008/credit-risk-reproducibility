@@ -1,0 +1,5 @@
+Group,Model,Default_Rate_%,Struct_F1,Text_F1,F1_Improvement_%
+Long,GB,54.04,0.753,0.762,1.2
+Long,RF,54.04,0.77,0.752,-2.34
+Short,GB,56.69,0.785,0.761,-3.06
+Short,RF,56.69,0.756,0.741,-1.98
