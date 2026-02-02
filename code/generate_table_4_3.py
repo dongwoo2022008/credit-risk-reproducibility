@@ -106,10 +106,14 @@ lr_row_recall.append(f"{val_recall:.3f} ({model_recall})")
 model_f1, val_f1 = find_best_model_per_metric(stage4_results, 'f1_score')
 lr_row_f1.append(f"{val_f1:.3f} ({model_f1})")
 
-# Calculate Δ for LR
-delta_roc_lr = ((float(lr_row_roc[4].split()[0]) - lr_baseline['roc_auc']) / lr_baseline['roc_auc']) * 100
-delta_recall_lr = ((float(lr_row_recall[4].split()[0]) - lr_baseline['recall']) / lr_baseline['recall']) * 100
-delta_f1_lr = ((float(lr_row_f1[4].split()[0]) - lr_baseline['f1_score']) / lr_baseline['f1_score']) * 100
+# Calculate Δ for LR (compare baseline against MAX across Stage 1-4)
+max_roc_lr = max([float(lr_row_roc[i].split()[0]) for i in range(3, 7)])
+max_recall_lr = max([float(lr_row_recall[i].split()[0]) for i in range(3, 7)])
+max_f1_lr = max([float(lr_row_f1[i].split()[0]) for i in range(3, 7)])
+
+delta_roc_lr = ((max_roc_lr - lr_baseline['roc_auc']) / lr_baseline['roc_auc']) * 100
+delta_recall_lr = ((max_recall_lr - lr_baseline['recall']) / lr_baseline['recall']) * 100
+delta_f1_lr = ((max_f1_lr - lr_baseline['f1_score']) / lr_baseline['f1_score']) * 100
 
 lr_row_roc.append(f"{delta_roc_lr:+.1f}%")
 lr_row_recall.append(f"{delta_recall_lr:+.1f}%")
@@ -155,10 +159,14 @@ xgb_row_recall.append(f"{val_recall:.3f} ({model_recall})")
 model_f1, val_f1 = find_best_model_per_metric(stage4_results, 'f1_score')
 xgb_row_f1.append(f"{val_f1:.3f} ({model_f1})")
 
-# Calculate Δ for XGB
-delta_roc_xgb = ((float(xgb_row_roc[4].split()[0]) - xgb_baseline['roc_auc']) / xgb_baseline['roc_auc']) * 100
-delta_recall_xgb = ((float(xgb_row_recall[4].split()[0]) - xgb_baseline['recall']) / xgb_baseline['recall']) * 100
-delta_f1_xgb = ((float(xgb_row_f1[4].split()[0]) - xgb_baseline['f1_score']) / xgb_baseline['f1_score']) * 100
+# Calculate Δ for XGB (compare baseline against MAX across Stage 1-4)
+max_roc_xgb = max([float(xgb_row_roc[i].split()[0]) for i in range(3, 7)])
+max_recall_xgb = max([float(xgb_row_recall[i].split()[0]) for i in range(3, 7)])
+max_f1_xgb = max([float(xgb_row_f1[i].split()[0]) for i in range(3, 7)])
+
+delta_roc_xgb = ((max_roc_xgb - xgb_baseline['roc_auc']) / xgb_baseline['roc_auc']) * 100
+delta_recall_xgb = ((max_recall_xgb - xgb_baseline['recall']) / xgb_baseline['recall']) * 100
+delta_f1_xgb = ((max_f1_xgb - xgb_baseline['f1_score']) / xgb_baseline['f1_score']) * 100
 
 xgb_row_roc.append(f"{delta_roc_xgb:+.1f}%")
 xgb_row_recall.append(f"{delta_recall_xgb:+.1f}%")
