@@ -1,7 +1,7 @@
-Baseline_Model,Metric,Stage_0,Stage_1,Stage_2,Stage_3,Stage_4,Delta
-LR,ROC-AUC,0.758,0.810 (GB),0.808 (GB),0.801 (GB),0.796 (GB),+5.0%
-LR,Recall,0.805,0.902 (NB),0.796 (GB),0.833 (RF),0.832 (SVM),+3.3%
-LR,F1-Score,0.747,0.772 (GB),0.771 (GB),0.771 (GB),0.770 (GB),+3.1%
-XGB,ROC-AUC,0.814,0.810 (GB),0.808 (GB),0.801 (GB),0.796 (GB),-2.2%
-XGB,Recall,0.802,0.902 (NB),0.796 (GB),0.833 (RF),0.832 (SVM),+3.7%
-XGB,F1-Score,0.776,0.772 (GB),0.771 (GB),0.771 (GB),0.770 (GB),-0.8%
+﻿Baseline Model,Metric,Stage 0,Stage 1,Stage 2,Stage 3,Stage 4,Δ
+LR,ROC-AUC,0.758,0.810 (GB),0.808 (GB),0.801 (GB),0.796 (GB),+6.6%
+LR,Recall,0.805,0.902 (NB),0.796 (GB),0.833 (RF),0.832 (SVM),-1.1%
+LR,F1-score,0.747,0.772 (GB),0.771 (GB),0.771 (GB),0.770 (GB),+3.2%
+XGB,ROC-AUC,0.814,0.810 (GB),0.808 (GB),0.801 (GB),0.796 (GB),-0.8%
+XGB,Recall,0.802,0.902 (NB),0.796 (GB),0.833 (RF),0.832 (SVM),-0.7%
+XGB,F1-score,0.776,0.772 (GB),0.771 (GB),0.771 (GB),0.770 (GB),-0.7%
