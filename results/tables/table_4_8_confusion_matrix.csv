@@ -1,0 +1,4 @@
+﻿model,TN,FP,FN,TP,FN_change,FN_change_rate
+Structured Standalone,360,181,154,517,0,0.0
+RF + Text,368,173,161,510,7,4.545454545454546
+GB + Text,357,184,133,538,-21,-13.636363636363635
