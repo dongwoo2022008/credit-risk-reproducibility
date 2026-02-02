@@ -1,0 +1,5 @@
+Stage,ROC-AUC (mean),ROC-AUC (range),Recall (mean),F1-score (mean)
+Stage 1 (TF-IDF),0.50,0.49-0.51,0.96,0.70
+Stage 2 (Subword),0.50,0.48-0.52,0.95,0.70
+Stage 3 (MiniLM),0.50,0.49-0.51,0.87,0.64
+Stage 4 (KoSimCSE),0.49,0.46-0.52,0.83,0.61
