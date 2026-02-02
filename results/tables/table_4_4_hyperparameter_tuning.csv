@@ -1,4 +1,4 @@
 ﻿Metric,Tuned model,Before (reference),After (tuned),Δ
-ROC-AUC,GB,0.810 (Stage 1 best),0.788,-0.022
+ROC-AUC,XGB,0.797 (Stage 1 best),0.793,-0.004
 Recall,RF,0.833 (Stage 3 best),0.826,-0.007
-F1-score,GB,0.772 (Stage 1 best),0.761,-0.011
+F1-score,XGB,0.758 (Stage 3 best),0.764,0.005
