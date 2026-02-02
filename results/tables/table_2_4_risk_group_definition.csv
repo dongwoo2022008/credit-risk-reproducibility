@@ -1,0 +1,3 @@
+Interval,Criterion (Credit Score),Sample Size,Default Rate (%)
+Bottom 30% (High Risk),≤ -1,1844,68.55
+Top 30% (Low Risk),≥ 1,1829,41.12
