@@ -139,6 +139,21 @@ python code/phase5_2_fn_recovery.py
 - Stage 3: MiniLM sentence embeddings (384 dimensions)
 - Stage 4: KoSimCSE sentence embeddings (768 dimensions)
 
+### Phase 3: Hyperparameter Tuning (Paper Original Models)
+
+**Using paper's original trained models with MiniLM data (397 features)**
+- LR, GB, XGB, RF tuned models
+- Results match paper exactly:
+  - GB: ROC-AUC 0.7883, F1 0.7612
+  - XGB: ROC-AUC 0.7932, F1 0.7636
+
+### Phase 4: Ensemble Models (Paper Original Models)
+
+**Using paper's original ensemble models**
+- Voting (Soft, Weighted), Stacking
+- Results match paper exactly:
+  - Stacking: ROC-AUC 0.7959, F1 0.7645
+
 ### Phase 5: Conditional Effect Analysis
 
 1. **Uncertainty Interval Analysis**: Marginal (0.3-0.7) vs Clear cases
@@ -192,6 +207,7 @@ To verify results match the paper:
 # Run all phases
 python code/phase0_structured_baseline.py
 python code/phase2_merged_models.py
+python code/evaluate_paper_models.py  # Phase 3 & 4 (paper original models)
 python code/phase5_1_uncertainty_analysis.py
 python code/phase5_2_fn_recovery.py
 

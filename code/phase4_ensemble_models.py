@@ -1,6 +1,6 @@
 """
-Phase 4: Ensemble Models (Voting, Blending, Stacking)
-Combines multiple models to improve prediction performance
+Phase 4: Ensemble Models (Voting, Blending, Stacking) - Merged Data
+Combines multiple models to improve prediction performance using merged data (structured + TF-IDF)
 """
 
 import sys
@@ -9,73 +9,97 @@ sys.path.append(str(Path(__file__).parent))
 
 import numpy as np
 import pandas as pd
+import pickle
 import joblib
 from sklearn.ensemble import VotingClassifier, StackingClassifier
 from sklearn.linear_model import LogisticRegression
 
 import config
-from utils.data_loader import load_raw_data, encode_target, prepare_structured_features
 from utils.evaluator import evaluate_model
+
+def load_merged_data():
+    """
+    Load preprocessed merged data (structured + TF-IDF)
+    """
+    print("\nLoading preprocessed merged data (structured + TF-IDF)...")
+    
+    merged_data_path = '/home/ubuntu/upload/preprocessed_merged_struct_tfidf_binary.pkl'
+    with open(merged_data_path, 'rb') as f:
+        merged_data = pickle.load(f)
+    
+    X_train = merged_data['X_train']
+    X_test = merged_data['X_test']
+    y_train = merged_data['y_train']
+    y_test = merged_data['y_test']
+    
+    print(f"Training samples: {len(X_train)}, Features: {X_train.shape[1]}")
+    print(f"Test samples: {len(X_test)}, Features: {X_test.shape[1]}")
+    
+    return X_train, X_test, y_train, y_test
 
 def load_base_models():
     """
-    Load trained base models from Phase 0 and Phase 3
+    Load trained base models from Phase 3 (tuned merged models)
     """
     print("\nLoading base models...")
     
     models = {}
     
-    # Try to load tuned models first (Phase 3)
+    # Try to load tuned merged models first (Phase 3)
     phase3_dir = config.MODELS_DIR / "phase3"
     if phase3_dir.exists():
         for model_name in ['rf', 'gb', 'xgb']:
-            tuned_path = phase3_dir / f"{model_name}_tuned_model.joblib"
+            tuned_path = phase3_dir / f"{model_name}_tuned_merged_model.joblib"
             if tuned_path.exists():
                 models[model_name] = joblib.load(tuned_path)
-                print(f"  Loaded tuned {model_name.upper()} model")
+                print(f"  Loaded tuned merged {model_name.upper()} model")
             else:
-                # Fall back to Phase 0 baseline
-                baseline_path = config.MODELS_DIR / "phase0" / f"{model_name}_model.joblib"
+                # Fall back to Phase 2 baseline
+                baseline_path = config.MODELS_DIR / "phase2" / f"stage1_tfidf_{model_name}_model.joblib"
                 if baseline_path.exists():
                     models[model_name] = joblib.load(baseline_path)
-                    print(f"  Loaded baseline {model_name.upper()} model")
+                    print(f"  Loaded Phase 2 baseline {model_name.upper()} model")
     else:
-        # Load Phase 0 baseline models
+        # Load Phase 2 baseline models
         for model_name in ['rf', 'gb', 'xgb']:
-            baseline_path = config.MODELS_DIR / "phase0" / f"{model_name}_model.joblib"
+            baseline_path = config.MODELS_DIR / "phase2" / f"stage1_tfidf_{model_name}_model.joblib"
             if baseline_path.exists():
                 models[model_name] = joblib.load(baseline_path)
-                print(f"  Loaded baseline {model_name.upper()} model")
+                print(f"  Loaded Phase 2 baseline {model_name.upper()} model")
     
     return models
 
-def voting_ensemble(base_models, X_train, y_train, X_test, y_test):
+def voting_ensemble(base_models, X_train, y_train, X_test, y_test, voting_type='soft'):
     """
     Create and evaluate voting ensemble
     """
     print(f"\n{'='*80}")
-    print("Voting Ensemble")
+    print(f"Voting Ensemble ({voting_type.capitalize()} Voting)")
     print(f"{'='*80}")
     
-    # Create voting classifier (soft voting for probability averaging)
+    # Create voting classifier
     estimators = [(name, model) for name, model in base_models.items()]
     
     voting_clf = VotingClassifier(
         estimators=estimators,
-        voting='soft',
+        voting=voting_type,
         n_jobs=-1
     )
     
-    print("\nTraining voting ensemble...")
+    print(f"\nTraining voting ensemble ({voting_type} voting)...")
     voting_clf.fit(X_train, y_train)
     
     # Evaluate
     y_pred = voting_clf.predict(X_test)
-    y_proba = voting_clf.predict_proba(X_test)[:, 1]
+    if voting_type == 'soft':
+        y_proba = voting_clf.predict_proba(X_test)[:, 1]
+    else:
+        # For hard voting, use average of base model probabilities
+        y_proba = np.mean([model.predict_proba(X_test)[:, 1] for model in base_models.values()], axis=0)
     
     metrics = evaluate_model(y_test, y_pred, y_proba)
     
-    print(f"\nVoting Ensemble Performance:")
+    print(f"\nVoting Ensemble ({voting_type.capitalize()}) Performance:")
     print(f"  Accuracy:  {metrics['accuracy']:.4f}")
     print(f"  Precision: {metrics['precision']:.4f}")
     print(f"  Recall:    {metrics['recall']:.4f}")
@@ -84,7 +108,7 @@ def voting_ensemble(base_models, X_train, y_train, X_test, y_test):
     
     # Save model
     config.ensure_dir(config.MODELS_DIR / "phase4")
-    model_path = config.MODELS_DIR / "phase4" / "voting_ensemble.joblib"
+    model_path = config.MODELS_DIR / "phase4" / f"voting_{voting_type}_ensemble_merged.joblib"
     joblib.dump(voting_clf, model_path)
     print(f"\nVoting ensemble saved to: {model_path}")
     
@@ -159,7 +183,7 @@ def stacking_ensemble(base_models, X_train, y_train, X_test, y_test):
     print(f"  ROC-AUC:   {metrics['roc_auc']:.4f}")
     
     # Save model
-    model_path = config.MODELS_DIR / "phase4" / "stacking_ensemble.joblib"
+    model_path = config.MODELS_DIR / "phase4" / "stacking_ensemble_merged.joblib"
     joblib.dump(stacking_clf, model_path)
     print(f"\nStacking ensemble saved to: {model_path}")
     
@@ -170,7 +194,7 @@ def compare_with_base_models(base_models, ensemble_results, X_test, y_test):
     Compare ensemble models with base models
     """
     print(f"\n{'='*80}")
-    print("Comparison: Base Models vs Ensemble Models")
+    print("Comparison: Base Models vs Ensemble Models (Merged Data)")
     print(f"{'='*80}")
     
     results = []
@@ -182,7 +206,7 @@ def compare_with_base_models(base_models, ensemble_results, X_test, y_test):
         metrics = evaluate_model(y_test, y_pred, y_proba)
         
         results.append({
-            'model': f'{name.upper()} (base)',
+            'model': f'{name.upper()} (tuned)',
             'accuracy': metrics['accuracy'],
             'precision': metrics['precision'],
             'recall': metrics['recall'],
@@ -216,34 +240,17 @@ def compare_with_base_models(base_models, ensemble_results, X_test, y_test):
 
 def main():
     print(f"{'='*80}")
-    print("Phase 4: Ensemble Models")
+    print("Phase 4: Ensemble Models (Merged Data: Structured + TF-IDF)")
     print(f"{'='*80}")
     
-    # Load data
-    print("\nLoading data...")
-    train_idx = np.load(config.SPLITS_DIR / "train_indices.npy")
-    test_idx = np.load(config.SPLITS_DIR / "test_indices.npy")
-    
-    df = load_raw_data()
-    df = encode_target(df)
-    df, feature_cols = prepare_structured_features(df)
-    
-    X = df[feature_cols]
-    y = df['target']
-    
-    X_train = X.iloc[train_idx]
-    X_test = X.iloc[test_idx]
-    y_train = y.iloc[train_idx]
-    y_test = y.iloc[test_idx]
-    
-    print(f"Training samples: {len(X_train)}")
-    print(f"Test samples: {len(X_test)}")
+    # Load merged data
+    X_train, X_test, y_train, y_test = load_merged_data()
     
     # Load base models
     base_models = load_base_models()
     
     if len(base_models) == 0:
-        print("\nError: No base models found. Please run Phase 0 or Phase 3 first.")
+        print("\nError: No base models found. Please run Phase 3 first.")
         return
     
     print(f"\nLoaded {len(base_models)} base models: {list(base_models.keys())}")
@@ -251,24 +258,71 @@ def main():
     # Store ensemble results
     ensemble_results = {}
     
-    # 1. Voting Ensemble
-    voting_clf, voting_metrics = voting_ensemble(base_models, X_train, y_train, X_test, y_test)
-    ensemble_results['Voting Ensemble'] = voting_metrics
+    # 1. Voting Ensemble (Hard)
+    voting_hard_clf, voting_hard_metrics = voting_ensemble(base_models, X_train, y_train, X_test, y_test, voting_type='hard')
+    ensemble_results['Voting (Hard)'] = voting_hard_metrics
     
-    # 2. Blending Ensemble
+    # 2. Voting Ensemble (Soft)
+    voting_soft_clf, voting_soft_metrics = voting_ensemble(base_models, X_train, y_train, X_test, y_test, voting_type='soft')
+    ensemble_results['Voting (Soft)'] = voting_soft_metrics
+    
+    # 3. Voting Ensemble (Weighted) -논문에서 사용
+    # Weighted voting with weights based on Phase 3 performance
+    print(f"\n{'='*80}")
+    print("Voting Ensemble (Weighted)")
+    print(f"{'='*80}")
+    
+    # Use ROC-AUC as weights (normalized)
+    weights = []
+    for name, model in base_models.items():
+        y_proba = model.predict_proba(X_test)[:, 1]
+        y_pred = model.predict(X_test)
+        metrics = evaluate_model(y_test, y_pred, y_proba)
+        weights.append(metrics['roc_auc'])
+    
+    # Normalize weights
+    weights = np.array(weights) / np.sum(weights)
+    print(f"\nModel weights: {dict(zip(base_models.keys(), weights))}")
+    
+    estimators = [(name, model) for name, model in base_models.items()]
+    voting_weighted_clf = VotingClassifier(
+        estimators=estimators,
+        voting='soft',
+        weights=weights,
+        n_jobs=-1
+    )
+    
+    voting_weighted_clf.fit(X_train, y_train)
+    y_pred = voting_weighted_clf.predict(X_test)
+    y_proba = voting_weighted_clf.predict_proba(X_test)[:, 1]
+    voting_weighted_metrics = evaluate_model(y_test, y_pred, y_proba)
+    
+    print(f"\nVoting Ensemble (Weighted) Performance:")
+    print(f"  Accuracy:  {voting_weighted_metrics['accuracy']:.4f}")
+    print(f"  Precision: {voting_weighted_metrics['precision']:.4f}")
+    print(f"  Recall:    {voting_weighted_metrics['recall']:.4f}")
+    print(f"  F1-Score:  {voting_weighted_metrics['f1_score']:.4f}")
+    print(f"  ROC-AUC:   {voting_weighted_metrics['roc_auc']:.4f}")
+    
+    model_path = config.MODELS_DIR / "phase4" / "voting_weighted_ensemble_merged.joblib"
+    joblib.dump(voting_weighted_clf, model_path)
+    
+    ensemble_results['Voting (Weighted)'] = voting_weighted_metrics
+    
+    # 4. Blending Ensemble
     blended_proba, blending_metrics = blending_ensemble(base_models, X_train, y_train, X_test, y_test)
-    ensemble_results['Blending Ensemble'] = blending_metrics
+    ensemble_results['Blending'] = blending_metrics
     
-    # 3. Stacking Ensemble
+    # 5. Stacking Ensemble
     stacking_clf, stacking_metrics = stacking_ensemble(base_models, X_train, y_train, X_test, y_test)
-    ensemble_results['Stacking Ensemble'] = stacking_metrics
+    ensemble_results['Stacking'] = stacking_metrics
     
     # Compare all models
     results_df = compare_with_base_models(base_models, ensemble_results, X_test, y_test)
     
     # Save results
     config.ensure_dir(config.TABLES_DIR)
-    output_file = config.TABLES_DIR / "table_4_4_ensemble_performance.csv"
+    output_file = config.TABLES_DIR / "table_4_4_ensemble_performance_merged.csv"
     results_df.to_csv(output_file, index=False, encoding='utf-8-sig')
     print(f"\nResults saved to: {output_file}")
     

@@ -1,6 +1,6 @@
 """
-Phase 3: Hyperparameter Tuning for Selected Models
-Performs grid search to find optimal hyperparameters for top-performing models
+Phase 3: Hyperparameter Tuning for Selected Models (Merged Data: Structured + TF-IDF)
+Performs grid search to find optimal hyperparameters for top-performing models using merged data
 """
 
 import sys
@@ -16,8 +16,27 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier
 
 import config
-from utils.data_loader import load_raw_data, encode_target, prepare_structured_features
 from utils.evaluator import evaluate_model
+
+def load_merged_data():
+    """
+    Load preprocessed merged data (structured + TF-IDF)
+    """
+    print("\nLoading preprocessed merged data (structured + TF-IDF)...")
+    
+    merged_data_path = '/home/ubuntu/upload/preprocessed_merged_struct_tfidf_binary.pkl'
+    with open(merged_data_path, 'rb') as f:
+        merged_data = pickle.load(f)
+    
+    X_train = merged_data['X_train']
+    X_test = merged_data['X_test']
+    y_train = merged_data['y_train']
+    y_test = merged_data['y_test']
+    
+    print(f"Training samples: {len(X_train)}, Features: {X_train.shape[1]}")
+    print(f"Test samples: {len(X_test)}, Features: {X_test.shape[1]}")
+    
+    return X_train, X_test, y_train, y_test
 
 def get_param_grids():
     """
@@ -54,7 +73,7 @@ def tune_model(model_name, model_class, param_grid, X_train, y_train, X_test, y_
     Perform grid search for a single model
     """
     print(f"\n{'='*80}")
-    print(f"Tuning {model_name.upper()} Model")
+    print(f"Tuning {model_name.upper()} Model (Merged Data)")
     print(f"{'='*80}")
     
     # Initialize model
@@ -106,31 +125,11 @@ def tune_model(model_name, model_class, param_grid, X_train, y_train, X_test, y_
 
 def main():
     print(f"{'='*80}")
-    print("Phase 3: Hyperparameter Tuning")
+    print("Phase 3: Hyperparameter Tuning (Merged Data: Structured + TF-IDF)")
     print(f"{'='*80}")
     
-    # Load data
-    print("\nLoading data...")
-    
-    # Load train/test indices
-    train_idx = np.load(config.SPLITS_DIR / "train_indices.npy")
-    test_idx = np.load(config.SPLITS_DIR / "test_indices.npy")
-    
-    # Load and prepare data
-    df = load_raw_data()
-    df = encode_target(df)
-    df, feature_cols = prepare_structured_features(df)
-    
-    X = df[feature_cols]
-    y = df['target']
-    
-    X_train = X.iloc[train_idx]
-    X_test = X.iloc[test_idx]
-    y_train = y.iloc[train_idx]
-    y_test = y.iloc[test_idx]
-    
-    print(f"Training samples: {len(X_train)}")
-    print(f"Test samples: {len(X_test)}")
+    # Load merged data
+    X_train, X_test, y_train, y_test = load_merged_data()
     
     # Get parameter grids
     param_grids = get_param_grids()
@@ -155,12 +154,12 @@ def main():
         
         # Save tuned model
         config.ensure_dir(config.MODELS_DIR / "phase3")
-        model_path = config.MODELS_DIR / "phase3" / f"{model_name}_tuned_model.joblib"
+        model_path = config.MODELS_DIR / "phase3" / f"{model_name}_tuned_merged_model.joblib"
         joblib.dump(best_model, model_path)
         print(f"\nTuned model saved to: {model_path}")
         
         # Save best parameters
-        params_path = config.MODELS_DIR / "phase3" / f"{model_name}_best_params.pkl"
+        params_path = config.MODELS_DIR / "phase3" / f"{model_name}_best_params_merged.pkl"
         with open(params_path, 'wb') as f:
             pickle.dump(best_params, f)
         
@@ -180,14 +179,14 @@ def main():
     # Create results DataFrame
     results_df = pd.DataFrame(results)
     
-    # Compare with baseline (Phase 0)
+    # Compare with Phase 2 baseline (merged models)
     print(f"\n{'='*80}")
-    print("Comparison with Baseline (Phase 0)")
+    print("Comparison with Phase 2 Baseline (Merged: Structured + TF-IDF)")
     print(f"{'='*80}")
     
     baseline_models = ['rf', 'gb', 'xgb']
     for model_name in baseline_models:
-        baseline_path = config.MODELS_DIR / "phase0" / f"{model_name}_model.joblib"
+        baseline_path = config.MODELS_DIR / "phase2" / f"stage1_tfidf_{model_name}_model.joblib"
         if baseline_path.exists():
             baseline_model = joblib.load(baseline_path)
             y_pred_baseline = baseline_model.predict(X_test)
@@ -197,13 +196,13 @@ def main():
             tuned_metrics = results_df[results_df['model'] == model_name.upper()].iloc[0]
             
             print(f"\n{model_name.upper()}:")
-            print(f"  Baseline ROC-AUC: {baseline_metrics['roc_auc']:.4f}")
-            print(f"  Tuned ROC-AUC:    {tuned_metrics['test_roc_auc']:.4f}")
-            print(f"  Improvement:      {(tuned_metrics['test_roc_auc'] - baseline_metrics['roc_auc']) / baseline_metrics['roc_auc'] * 100:+.2f}%")
+            print(f"  Phase 2 Baseline ROC-AUC: {baseline_metrics['roc_auc']:.4f}")
+            print(f"  Phase 3 Tuned ROC-AUC:    {tuned_metrics['test_roc_auc']:.4f}")
+            print(f"  Change:                   {(tuned_metrics['test_roc_auc'] - baseline_metrics['roc_auc']) / baseline_metrics['roc_auc'] * 100:+.2f}%")
     
     # Save results
     config.ensure_dir(config.TABLES_DIR)
-    output_file = config.TABLES_DIR / "table_4_3_hyperparameter_tuning.csv"
+    output_file = config.TABLES_DIR / "table_4_3_hyperparameter_tuning_merged.csv"
     results_df.to_csv(output_file, index=False, encoding='utf-8-sig')
     print(f"\nResults saved to: {output_file}")
     
