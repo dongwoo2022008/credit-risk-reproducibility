@@ -111,6 +111,61 @@
 
 ---
 
+### 5. Phase 3: 하이퍼파라미터 튜닝 (✅ 완료)
+
+**구현 내용:**
+- RF, GB, XGB 모델 하이퍼파라미터 튜닝
+- GridSearchCV with 5-fold CV
+- 간소화된 파라미터 그리드 (빠른 실행)
+
+**결과:**
+| 모델 | CV ROC-AUC | Test ROC-AUC | Baseline | 개선율 |
+|------|------------|--------------|----------|--------|
+| RF   | 0.8073     | 0.8015       | 0.8015   | 0%     |
+| GB   | 0.8216     | 0.8153       | 0.8124   | +0.36% |
+| XGB  | 0.8193     | 0.8152       | 0.8142   | +0.12% |
+
+**주요 발견:**
+- GB가 가장 좋은 성능 (0.8153)
+- 하이퍼파라미터 튜닝으로 약간의 개선
+
+**파일:**
+- `code/phase3_hyperparameter_tuning.py`
+- `results/tables/table_4_3_hyperparameter_tuning.csv`
+- `models/phase3/*.joblib` (3개 튜닝된 모델)
+
+---
+
+### 6. Phase 4: 앙상블 모델 (✅ 완료)
+
+**구현 내용:**
+- Voting Ensemble (soft voting)
+- Blending Ensemble (simple averaging)
+- Stacking Ensemble (Logistic Regression meta-learner)
+- 5-fold CV for stacking
+
+**결과:**
+| 모델 | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+|------|----------|-----------|--------|----------|----------|
+| **Stacking** | **0.7525** | **0.7616** | **0.8048** | **0.7826** | **0.8159** |
+| GB (base) | 0.7475 | 0.7552 | 0.8048 | 0.7792 | 0.8153 |
+| Blending | 0.7492 | 0.7603 | 0.7988 | 0.7791 | 0.8153 |
+| Voting | 0.7492 | 0.7603 | 0.7988 | 0.7791 | 0.8153 |
+| XGB (base) | 0.7450 | 0.7535 | 0.8018 | 0.7769 | 0.8152 |
+| RF (base) | 0.7360 | 0.7461 | 0.7928 | 0.7688 | 0.8015 |
+
+**주요 발견:**
+- Stacking이 최고 성능 (0.8159)
+- 앙상블로 약간의 성능 향상 (+0.06% from GB)
+- Voting과 Blending이 동일한 성능
+
+**파일:**
+- `code/phase4_ensemble_models.py`
+- `results/tables/table_4_4_ensemble_performance.csv`
+- `models/phase4/*.joblib` (2개 앙상블 모델)
+
+---
+
 ## 데이터
 
 ### 원본 데이터
@@ -238,14 +293,6 @@ python code/phase5_2_fn_recovery.py
 - 실행 시간이 너무 오래 걸려 완료하지 못함
 - Preprocessed 데이터 활용 가능
 
-### Phase 3: Hyperparameter tuning
-- 미구현
-- 시간 제약으로 생략
-
-### Phase 4: Ensemble models
-- 미구현
-- Voting, Blending, Stacking 필요
-
 ### Phase 5-3, 5-4
 - Threshold sensitivity analysis
 - Text length analysis
@@ -259,10 +306,8 @@ python code/phase5_2_fn_recovery.py
 
 ## 향후 작업
 
-1. **Phase 1, 3, 4 완성**
+1. **Phase 1 완성**
    - 텍스트 전처리 최적화
-   - 하이퍼파라미터 튜닝
-   - 앙상블 모델
 
 2. **Phase 5 완성**
    - Threshold sensitivity
