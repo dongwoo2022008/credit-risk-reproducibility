@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).parent))
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -95,9 +95,15 @@ def split_data(seed, test_size=0.2):
         X, y, test_size=test_size, random_state=seed, stratify=y
     )
     
+    # Apply StandardScaler
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    
     print(f"Train: {len(X_train)} samples, Test: {len(X_test)} samples")
     print(f"Train default rate: {y_train.mean():.2%}, Test default rate: {y_test.mean():.2%}")
     print(f"Features: {X.shape[1]}")
+    print(f"Standardization applied: Mean~0, Std~1")
     
     feature_names = structured_vars + ['대출용도', '4대보험'] + [f'tfidf_{i}' for i in range(100)]
     

@@ -1,0 +1,152 @@
+[
+  {
+    "seed": 1,
+    "rf": {
+      "params": {
+        "max_depth": 20,
+        "min_samples_leaf": 1,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      "cv_score": 0.8082007145587585
+    },
+    "gb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_samples_split": 5,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8089441665806113
+    },
+    "xgb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 3,
+        "n_estimators": 200
+      },
+      "cv_score": 0.8107792781308584
+    }
+  },
+  {
+    "seed": 2,
+    "rf": {
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 2,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      "cv_score": 0.8027682810517808
+    },
+    "gb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8087297665998481
+    },
+    "xgb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 3,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8118090380658307
+    }
+  },
+  {
+    "seed": 3,
+    "rf": {
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 2,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      "cv_score": 0.8052853172990033
+    },
+    "gb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8086888851868272
+    },
+    "xgb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8094963334760786
+    }
+  },
+  {
+    "seed": 4,
+    "rf": {
+      "params": {
+        "max_depth": 20,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 200
+      },
+      "cv_score": 0.8025228909256505
+    },
+    "gb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8039483560682879
+    },
+    "xgb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 3,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8057285762397506
+    }
+  },
+  {
+    "seed": 5,
+    "rf": {
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 2,
+        "min_samples_split": 5,
+        "n_estimators": 200
+      },
+      "cv_score": 0.7956364327230213
+    },
+    "gb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_samples_split": 2,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8020320092036884
+    },
+    "xgb": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 3,
+        "n_estimators": 100
+      },
+      "cv_score": 0.8013944177171854
+    }
+  }
+]
